@@ -1,5 +1,11 @@
 require 'optparse'
 
+def validate_line_n (line_n, str_count)
+
+  raise "Wrong argument: line_n" if (line_n.class != Integer) || (line_n < 1) || (line_n > str_count)
+  
+end
+
 options = {}
 	OptionParser.new do |opts|
 	  opts.banner = "Usage: taskm.rb [options]"
@@ -19,7 +25,7 @@ options = {}
 		end
 
 	    opts.on("-a") do |a| 										#добавление новой задачи
-		    text=File.open('taskm.txt').read 						#считаем кол-во строк для определения ид
+		    text=File.open('taskm.txt').read 								#считаем кол-во строк для определения ид
 		    text.gsub!(/\r\n?/, "\n")
 		    line_num = text.split("\n").length
 		      
@@ -30,7 +36,7 @@ options = {}
 		    text.puts "#{line_num}. [ ] #{new_task}"
 		    text.close
 		      
-		    #line_num=0 											#вывод результирующего файла
+		    #line_num=0 										#вывод результирующего файла
 		    text=File.open('taskm.txt').read
 		    text.gsub!(/\r\n?/, "\n")
 		    text.each_line do |line|
@@ -38,15 +44,18 @@ options = {}
 		    end
 	    end
 
-		opts.on("-c", "--c LINE_N", Integer) do |line_n|            #отметить завершенной
-		    text=File.open('taskm.txt').read
+		opts.on("-c", "--c LINE_N", Integer) do |line_n|            					#отметить завершенной
+			text=File.open('taskm.txt').read
 		    text.gsub!(/\r\n?/, "\n")
 		    arr = text.split("\n")
+		    
+		    validate_line_n(line_n, arr.size)                      					#проверка аргумента 
+
 		    arr[line_n-1].sub!('[ ]', '[x]')
 		    File.open('taskm.txt', "w") {|file| file.puts arr }
 
 
-		    #line_num=0 											#вывод результирующего файла
+		    #line_num=0 										#вывод результирующего файла
 		    text=File.open('taskm.txt').read
 		    text.gsub!(/\r\n?/, "\n")
 		    text.each_line do |line|
@@ -55,14 +64,15 @@ options = {}
 
   		end
 
-        opts.on("-d", "--d LINE_N", Integer) do |line_n| 			#удаление выбранной строки
+        opts.on("-d", "--d LINE_N", Integer) do |line_n| 							#удаление выбранной строки
 
 	        #line_n = 3 #строка к удалению
 
 	        text=File.open('taskm.txt').read
 	        text.gsub!(/\r\n?/, "\n")
 	        arr = text.split("\n")
-	        #puts arr
+	        
+	        validate_line_n(line_n, arr.size)                      						#проверка аргумента 
 
 	        if line_n == arr.size
 	          arr.pop
